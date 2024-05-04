@@ -17,6 +17,7 @@ public class RegionController {
     RegionController(RegionService regionService){
         this.regionService = regionService;
     }
+
     @GetMapping
     List<Region> getAllRegions(){
         return regionService.getAllregions();

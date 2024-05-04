@@ -1,6 +1,7 @@
 package com.eac.arbitrage.service;
 
 import com.eac.arbitrage.model.Analysis;
+import com.eac.arbitrage.controller.AnalysisDTO;
 import com.eac.arbitrage.repository.AnalysisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,5 +16,9 @@ public class AnalysisService {
     }
     public List<Analysis> getAllAnalyses(){
        return analysisRepository.findAll();
+    }
+    public Analysis addAnalysis(Analysis analysis){
+        analysisRepository.save(analysis);
+        return(analysis);
     }
 }
