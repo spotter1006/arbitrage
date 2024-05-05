@@ -14,6 +14,9 @@ public class AnalysisService {
     AnalysisService(AnalysisRepository analysisRepository){
         this.analysisRepository=analysisRepository;
     }
+    public Analysis getById(Long id){
+        return analysisRepository.getReferenceById(id);
+    }
     public List<Analysis> getAllAnalyses(){
        return analysisRepository.findAll();
     }
