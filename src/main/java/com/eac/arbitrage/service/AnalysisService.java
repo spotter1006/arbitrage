@@ -4,6 +4,7 @@ import com.eac.arbitrage.model.Analysis;
 import com.eac.arbitrage.controller.AnalysisDTO;
 import com.eac.arbitrage.repository.AnalysisRepository;
 import com.eac.arbitrage.repository.LmpRepository;
+import com.eac.arbitrage.repository.ResultsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,14 @@ public class AnalysisService {
     private final AnalysisRepository analysisRepository;
     private final ExecutorService executorService;
     private final LmpRepository lmpRepository;
+    private final ResultsRepository resultsRepository;
 
     @Autowired
-    AnalysisService(AnalysisRepository analysisRepository, LmpRepository lmpRepository){
+    AnalysisService(AnalysisRepository analysisRepository, LmpRepository lmpRepository, ResultsRepository resultsRepository){
         this.analysisRepository=analysisRepository;
         this.executorService = Executors.newSingleThreadExecutor();
         this.lmpRepository = lmpRepository;
+        this.resultsRepository = resultsRepository;
     }
     public Analysis getById(Long id){
         return analysisRepository.getReferenceById(id);
@@ -34,6 +37,6 @@ public class AnalysisService {
         return(analysis);
     }
     public void startAnalysis(AnalysisDTO analysis){
-        executorService.submit(new AnalyzeRunnable(analysis, lmpRepository));
+        executorService.submit(new AnalyzeRunnable(analysis, lmpRepository, resultsRepository));
     }
 }

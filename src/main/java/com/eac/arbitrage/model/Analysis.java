@@ -35,6 +35,7 @@ public class Analysis {
     String outputInterval;
 
     public Analysis(AnalysisDTO dto){
+        this.setId(dto.getId());
         this.setName(dto.getName());
         this.setPool(dto.getPool());
         this.setRegion(dto.getRegion());
@@ -46,7 +47,6 @@ public class Analysis {
     }
 
     private Instant parse(String input){
-
         DateTimeFormatter f = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime ldt = LocalDateTime.parse(input, f);
         ZoneId z = ZoneId.of("UTC");

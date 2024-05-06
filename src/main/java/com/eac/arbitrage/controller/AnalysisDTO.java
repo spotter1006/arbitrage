@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AnalysisDTO {
     AnalysisDTO(Analysis analysis){
+        this.setId(analysis.getId());
         this.setName(analysis.getName());
         this.setPool(analysis.getPool());
         this.setRegion(analysis.getRegion());
@@ -19,6 +20,7 @@ public class AnalysisDTO {
         this.setOutputInterval(analysis.getOutputInterval());
         this.setStatus(analysis.getStatus());
     }
+    Long id;
     String name;
     String pool;
     String region;
