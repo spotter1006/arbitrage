@@ -33,6 +33,9 @@ public class Analysis {
     private Instant endTime;
     String status;
     String outputInterval;
+    Integer averageWindow;
+    Double chargeRate;
+    Double efficiency;
 
     public Analysis(AnalysisDTO dto){
         this.setId(dto.getId());
@@ -44,6 +47,9 @@ public class Analysis {
         this.setCapacity(dto.getCapacity());
         this.setOutputInterval(dto.getOutputInterval());
         this.setStatus(dto.getStatus());
+        this.setAverageWindow(dto.getAverageWindow());
+        this.setChargeRate(dto.getChargeRate());
+        this.setEfficiency(dto.getEfficiency());
     }
 
     private Instant parse(String input){

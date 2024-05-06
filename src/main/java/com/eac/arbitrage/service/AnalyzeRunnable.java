@@ -16,7 +16,7 @@ public class AnalyzeRunnable implements Runnable{
 
     // TODO: convert these constants to input parameters in the analysis spec
     private final static Integer AVERAGE_WINDOW = 100;
-    private final static double C_RATE = 0.5;
+    private final static double C_RATE = 1.0;
     private final static double EFFICIENCY = 0.90;
 
     AnalysisDTO analysis;
@@ -65,7 +65,7 @@ public class AnalyzeRunnable implements Runnable{
             stateOfCharge -= MWHs;
             runningRevenue += rev * EFFICIENCY;     // Losses don't contribute to revenue
             totalRevenue += rev * EFFICIENCY;
-        } else if (lmp.getPrice() < averagePrice && stateOfCharge < analysis.getCapacity()) {     // buy
+        } else if (lmp.getPrice() < averagePrice && stateOfCharge < analysis.getCapacity() - MWHs) {     // buy
             stateOfCharge += MWHs * EFFICIENCY;     // Losses detract from charging
             runningRevenue -= rev;                  // But the energy still has to be paid for
             totalRevenue -= rev;

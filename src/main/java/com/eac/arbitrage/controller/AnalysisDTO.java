@@ -19,6 +19,9 @@ public class AnalysisDTO {
         this.setCapacity(analysis.getCapacity());
         this.setOutputInterval(analysis.getOutputInterval());
         this.setStatus(analysis.getStatus());
+        this.setAverageWindow(analysis.getAverageWindow());
+        this.setChargeRate(analysis.getChargeRate());
+        this.setEfficiency(analysis.getEfficiency());
     }
     Long id;
     String name;
@@ -29,4 +32,7 @@ public class AnalysisDTO {
     Double capacity;
     String outputInterval;
     String status;
+    Integer averageWindow;
+    Double chargeRate;
+    Double efficiency;
 }
