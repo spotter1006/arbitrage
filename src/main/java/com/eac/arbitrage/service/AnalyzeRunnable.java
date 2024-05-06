@@ -14,11 +14,6 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 public class AnalyzeRunnable implements Runnable{
 
-    // TODO: convert these constants to input parameters in the analysis spec
-    private final static Integer AVERAGE_WINDOW = 100;
-    private final static double C_RATE = 1.0;
-    private final static double EFFICIENCY = 0.90;
-
     AnalysisDTO analysis;
     LmpRepository lmpRepository;
     ResultsRepository resultsRepository;
@@ -35,7 +30,7 @@ public class AnalyzeRunnable implements Runnable{
         this.resultsRepository = resultsRepository;
         averagePrice = 0.0;
         stateOfCharge = analysis.getCapacity() / 2.0;     // Start half-full
-        latestRecords = new CircularFifoQueue<Lmp>(AVERAGE_WINDOW);
+        latestRecords = new CircularFifoQueue<Lmp>(analysis.getAverageWindow());
         runningRevenue=0.0;
     }
     public void run(){
@@ -51,23 +46,23 @@ public class AnalyzeRunnable implements Runnable{
     }
     public void processLmp(Lmp lmp, Long analysisId){
         latestRecords.add(lmp);
-        if(latestRecords.size() < AVERAGE_WINDOW)   return; // Wait for average window number of records
+        if(latestRecords.size() < analysis.getAverageWindow())   return; // Wait for average window number of records
 
         updateAverage();
         Instant priorInstant = (latestRecords.get(latestRecords.size()-2)).getUtc();
         double hours = Duration.between( priorInstant, lmp.getUtc()).get(ChronoUnit.SECONDS) / 3600.0;
-        double MWs = analysis.getCapacity() * C_RATE;
+        double MWs = analysis.getCapacity() * analysis.getChargeRate();
         double MWHs = MWs * hours;
         double rev = MWHs * lmp.getPrice();
 
         // TODO: replace efficiency with real losses based on SoC and power
-        if(lmp.getPrice() > averagePrice && stateOfCharge >= MWHs){              // Sell
+        if(lmp.getPrice() > averagePrice && stateOfCharge >= MWHs){     // Sell
             stateOfCharge -= MWHs;
-            runningRevenue += rev * EFFICIENCY;     // Losses don't contribute to revenue
-            totalRevenue += rev * EFFICIENCY;
+            runningRevenue += rev * analysis.getEfficiency();           // Losses don't contribute to revenue
+            totalRevenue += rev * analysis.getEfficiency();
         } else if (lmp.getPrice() < averagePrice && stateOfCharge < analysis.getCapacity() - MWHs) {     // buy
-            stateOfCharge += MWHs * EFFICIENCY;     // Losses detract from charging
-            runningRevenue -= rev;                  // But the energy still has to be paid for
+            stateOfCharge += MWHs * analysis.getEfficiency();       // Losses detract from charging
+            runningRevenue -= rev;                                  // But the energy still has to be paid for
             totalRevenue -= rev;
         }
 
