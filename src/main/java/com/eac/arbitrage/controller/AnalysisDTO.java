@@ -24,7 +24,7 @@ public class AnalysisDTO {
     String region;
     String startTime;
     String endTime;
-    Integer capacity;
+    Double capacity;
     String outputInterval;
     String status;
 }

@@ -25,5 +25,5 @@ public interface LmpRepository extends JpaRepository<Lmp, Long> {
 
 //    @Query(value = "SELECT * FROM lmps WHERE  region = ?1 AND utc BETWEEN ?2 AND ?3 ORDER BY utc ASC", nativeQuery = true)
 //    List<Lmp> getForRegionBetween( String region, Instant startTime, Instant endTime);
-    List<Lmp> getByRegionLikeAndUtcBetween( String region, Instant startTime, Instant endTime);
+    List<Lmp> getByRegionLikeAndUtcBetweenOrderByUtc( String region, Instant startTime, Instant endTime);
 }

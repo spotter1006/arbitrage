@@ -26,7 +26,7 @@ public class Analysis {
     private String name;
     private String pool;
     private String region;
-    Integer capacity;
+    Double capacity;
     @Temporal(TemporalType.TIMESTAMP)
     private Instant startTime;
     @Temporal(TemporalType.TIMESTAMP)
