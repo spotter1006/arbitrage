@@ -3,8 +3,6 @@ package com.eac.arbitrage.repository;
 import com.eac.arbitrage.model.Price;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-
 import java.time.Instant;
 import java.util.List;
 

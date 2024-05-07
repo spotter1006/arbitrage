@@ -35,6 +35,7 @@ public class AnalyzeRunnable implements Runnable{
     }
     public void run(){
         try {
+            resultsRepository.deleteByAnalysisId(analysis.getId());
             List<Price> prices = priceRepository.getPriceHistoryForRegion(analysis.getAverageWindow()/2, analysis.getAverageWindow()/2, Instant.parse(analysis.getStartTime()), Instant.parse(analysis.getEndTime()), analysis.getRegion());
             reportInstant = prices.get(0).getUtc();
             dataIntervalHours = Duration.between( prices.get(0).getUtc(),prices.get(1).getUtc()).get(ChronoUnit.SECONDS) / 3600.0;
