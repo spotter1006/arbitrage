@@ -18,4 +18,5 @@ public class Price {
     Long id;
     Instant utc;
     Double price;
+    Double averagePrice;
 }

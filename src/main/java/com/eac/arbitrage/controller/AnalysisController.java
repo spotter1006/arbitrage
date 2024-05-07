@@ -33,9 +33,7 @@ public class AnalysisController {
     @PutMapping("/{analysisId}")
     String startAnalysis(@PathVariable Long analysisId){
         String result;
-
         try {
-
             Analysis analysis = analysisService.getById(analysisId);
             result = "Starting analysis " + analysisId + ". check later for results ";
             analysisService.startAnalysis(new AnalysisDTO(analysis));
@@ -43,6 +41,5 @@ public class AnalysisController {
             result = "Analysis with ID " + analysisId + " not found";
         }
         return result;
-
     }
 }

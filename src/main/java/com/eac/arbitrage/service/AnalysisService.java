@@ -3,7 +3,7 @@ package com.eac.arbitrage.service;
 import com.eac.arbitrage.model.Analysis;
 import com.eac.arbitrage.controller.AnalysisDTO;
 import com.eac.arbitrage.repository.AnalysisRepository;
-import com.eac.arbitrage.repository.LmpRepository;
+import com.eac.arbitrage.repository.PriceRepository;
 import com.eac.arbitrage.repository.ResultsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,14 +16,14 @@ import java.util.concurrent.Executors;
 public class AnalysisService {
     private final AnalysisRepository analysisRepository;
     private final ExecutorService executorService;
-    private final LmpRepository lmpRepository;
+    private final PriceRepository priceRepository;
     private final ResultsRepository resultsRepository;
 
     @Autowired
-    AnalysisService(AnalysisRepository analysisRepository, LmpRepository lmpRepository, ResultsRepository resultsRepository){
+    AnalysisService(AnalysisRepository analysisRepository, PriceRepository priceRepository, ResultsRepository resultsRepository){
         this.analysisRepository=analysisRepository;
         this.executorService = Executors.newSingleThreadExecutor();
-        this.lmpRepository = lmpRepository;
+        this.priceRepository = priceRepository;
         this.resultsRepository = resultsRepository;
     }
     public Analysis getById(Long id){
@@ -37,6 +37,6 @@ public class AnalysisService {
         return(analysis);
     }
     public void startAnalysis(AnalysisDTO analysis){
-        executorService.submit(new AnalyzeRunnable(analysis, lmpRepository, resultsRepository));
+        executorService.submit(new AnalyzeRunnable(analysis, priceRepository, resultsRepository));
     }
 }
