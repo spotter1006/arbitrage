@@ -1,6 +1,5 @@
 package com.eac.arbitrage.service;
 import com.eac.arbitrage.controller.AnalysisDTO;
-import com.eac.arbitrage.model.Lmp;
 import com.eac.arbitrage.model.Price;
 import com.eac.arbitrage.model.Result;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 import com.eac.arbitrage.repository.PriceRepository;
 import com.eac.arbitrage.repository.ResultsRepository;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 public class AnalyzeRunnable implements Runnable{
 

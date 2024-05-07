@@ -5,6 +5,8 @@ import com.eac.arbitrage.service.AnalysisService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -27,14 +29,20 @@ public class AnalysisController {
         String result = "";
         Analysis analysis = new Analysis(analysisSpec);
         analysis.setStatus("CREATED");
-        analysisService.addAnalysis(analysis);
+        analysisService.addOrUpdate(analysis);
         return result;
     }
+    // This method updates an existing analysis if a spec is found in the body spec and runs it
     @PutMapping("/{analysisId}")
-    String startAnalysis(@PathVariable Long analysisId){
+    String startAnalysis(@PathVariable Long analysisId, @RequestBody AnalysisDTO analysisSpec){
         String result;
         try {
             Analysis analysis = analysisService.getById(analysisId);
+            if(analysisSpec != null){
+                Analysis analysisUpdate = new Analysis(analysisSpec);
+                analysisUpdate.setId(analysisId);
+                analysisService.addOrUpdate(analysisUpdate);
+            }
             result = "Starting analysis " + analysisId + ". check later for results ";
             analysisService.startAnalysis(new AnalysisDTO(analysis));
         }catch(EntityNotFoundException e){

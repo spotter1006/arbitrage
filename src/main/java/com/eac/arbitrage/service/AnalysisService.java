@@ -32,11 +32,12 @@ public class AnalysisService {
     public List<Analysis> getAllAnalyses(){
        return analysisRepository.findAll();
     }
-    public Analysis addAnalysis(Analysis analysis){
+    public Analysis addOrUpdate(Analysis analysis){
         analysisRepository.save(analysis);
         return(analysis);
     }
     public void startAnalysis(AnalysisDTO analysis){
         executorService.submit(new AnalyzeRunnable(analysis, priceRepository, resultsRepository));
     }
+
 }
