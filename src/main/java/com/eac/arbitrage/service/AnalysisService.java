@@ -1,7 +1,6 @@
 package com.eac.arbitrage.service;
 
 import com.eac.arbitrage.model.Analysis;
-import com.eac.arbitrage.controller.AnalysisDTO;
 import com.eac.arbitrage.repository.AnalysisRepository;
 import com.eac.arbitrage.repository.PriceRepository;
 import com.eac.arbitrage.repository.ResultsRepository;
@@ -22,7 +21,7 @@ public class AnalysisService {
     @Autowired
     AnalysisService(AnalysisRepository analysisRepository, PriceRepository priceRepository, ResultsRepository resultsRepository){
         this.analysisRepository=analysisRepository;
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorService = Executors.newFixedThreadPool(1);
         this.priceRepository = priceRepository;
         this.resultsRepository = resultsRepository;
     }
@@ -36,8 +35,12 @@ public class AnalysisService {
         analysisRepository.save(analysis);
         return(analysis);
     }
-    public void startAnalysis(AnalysisDTO analysis){
+    public void deleteResults(Long analysisId){
+        resultsRepository.deleteByAnalysisId(analysisId);
+    }
+    public void startAnalysis(Analysis analysis){
         executorService.submit(new AnalyzeRunnable(analysis, priceRepository, resultsRepository));
     }
+
 
 }

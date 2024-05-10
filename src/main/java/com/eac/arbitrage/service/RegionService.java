@@ -14,7 +14,10 @@ public class RegionService {
     RegionService(RegionRepository regionRepository){
         this.regionRepository = regionRepository;
     }
+
     public List<Region> getAllregions(){
         return regionRepository.findAll();
     }
+    public List<Region> getByPoolId(Long id){return regionRepository.getByPoolid(id);}
+    public Region getByName(String name){return regionRepository.getByName(name);}
 }

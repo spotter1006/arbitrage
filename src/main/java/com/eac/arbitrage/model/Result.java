@@ -16,6 +16,8 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     Long analysisId;
+    String pool;
+    String region;
     Instant utc;
     Double energy;
     Double revenue;

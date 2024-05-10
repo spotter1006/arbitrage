@@ -51,6 +51,20 @@ public class Analysis {
         this.setChargeRate(dto.getChargeRate());
         this.setEfficiency(dto.getEfficiency());
     }
+    public Analysis(Analysis other){
+        this.setId(other.getId());
+        this.setName(other.getName());
+        this.setPool(other.getPool());
+        this.setRegion(other.getRegion());
+        this.setStartTime(other.getStartTime());
+        this.setEndTime(other.getEndTime());
+        this.setCapacity(other.getCapacity());
+        this.setOutputInterval(other.getOutputInterval());
+        this.setStatus(other.getStatus());
+        this.setAverageWindow(other.getAverageWindow());
+        this.setChargeRate(other.getChargeRate());
+        this.setEfficiency(other.getEfficiency());
+    }
 
     private Instant parse(String input){
         DateTimeFormatter f = DateTimeFormatter.ISO_DATE_TIME;

@@ -15,8 +15,11 @@ public class PoolService {
         this.poolRepository = poolRepository;
     }
 
-    // Method to get all pools
+
     public List<Pool> getAllPools() {
         return poolRepository.findAll();
     }
+    public Pool getById(Long id){return poolRepository.getReferenceById(id);}
+    public Pool getByName(String name){return poolRepository.getByName(name);};
+
 }
