@@ -49,6 +49,7 @@ public class AnalysisController {
         String result="";
         List<Pool> pools = (StringUtils.isEmpty(analysisDTO.getPool())? poolService.getAllPools() : Collections.singletonList(poolService.getByName(analysisDTO.getPool())));
         for(Pool pool : pools){
+            analysis.setPool(pool.getName());
             List<Region> regions = (StringUtils.isEmpty(analysisDTO.getRegion())? regionService.getByPoolId(pool.getId()): Collections.singletonList(regionService.getByName(analysisDTO.getRegion())));
             for(Region region : regions){
                 analysis.setRegion(region.getName());

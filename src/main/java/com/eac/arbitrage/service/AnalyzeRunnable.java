@@ -1,6 +1,5 @@
 package com.eac.arbitrage.service;
 
-import com.eac.arbitrage.controller.AnalysisDTO;
 import com.eac.arbitrage.model.Analysis;
 import com.eac.arbitrage.model.Price;
 import com.eac.arbitrage.model.Result;
