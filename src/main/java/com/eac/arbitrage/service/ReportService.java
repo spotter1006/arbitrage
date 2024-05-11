@@ -51,6 +51,7 @@ public class ReportService {
                 headerCell = header.createCell(1); headerCell.setCellValue("Energy");
                 headerCell = header.createCell(2); headerCell.setCellValue("Revenue");
                 headerCell = header.createCell(3);  headerCell.setCellValue("Total Revenue");
+                sheet.setColumnWidth(0, 6000);
 
                 List<Result> results = resultsRepository.getByRegion(region);
                 int i = 1;
