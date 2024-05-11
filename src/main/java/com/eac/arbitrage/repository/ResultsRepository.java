@@ -15,4 +15,5 @@ public interface ResultsRepository extends JpaRepository<Result, Long> {
     @Query(value = "SELECT DISTINCT region FROM results WHERE pool = ?1",nativeQuery = true)
     List<String> getDistinctRegionByPool(String pool);
     List<Result> getByRegion(String region);
+    List<Result> getByPool(String pool);
 }
