@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -55,9 +56,9 @@ public class ReportService {
                 int i = 1;
                 for (Result result : results) {
                     Row dataRow = sheet.createRow(i++);
-//                    OffsetDateTime odt = result.getUtc().atOffset( ZoneOffset.UTC );
+                    LocalDateTime ldt  = LocalDateTime.ofInstant(result.getUtc(), ZoneOffset.UTC );
 
-                    Cell dataCell = dataRow.createCell(0); dataCell.setCellValue(Date.from(result.getUtc()));
+                    Cell dataCell = dataRow.createCell(0); dataCell.setCellValue(ldt);
                     CellStyle cellStyle = workbook.createCellStyle();
                     cellStyle.setDataFormat(                            createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
 
