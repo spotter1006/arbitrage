@@ -33,6 +33,9 @@ public class ReportService {
             List<String> regions = resultsRepository.getDistinctRegionByPool(pool);
 
             Workbook workbook = new XSSFWorkbook();
+            CreationHelper createHelper = workbook.getCreationHelper();
+            CellStyle timestampStyle = workbook.createCellStyle();
+            timestampStyle.setDataFormat( createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
 
             Sheet energySheet = workbook.createSheet("Energy");
             setupSheet(energySheet, regions);
@@ -40,12 +43,14 @@ public class ReportService {
             Sheet revSheet = workbook.createSheet("Revenue");
             setupSheet(revSheet, regions);
 
-            Sheet totalSheet = workbook.createSheet("Total revenue");
+            Sheet totalSheet = workbook.createSheet("Total Revenue");
             setupSheet(totalSheet, regions);
 
             List<Result> results = resultsRepository.getByPool(pool);
             for(Result result : results){
-                addResult(result, workbook,regions);
+                addResult(result, energySheet, timestampStyle);
+                addResult(result, revSheet, timestampStyle);
+                addResult(result, totalSheet, timestampStyle);
             }
 
             // Save to filesystem
@@ -68,31 +73,31 @@ public class ReportService {
         }
     }
     // Sheet order: 0 = energy, 1 = revenue, 2 = total revenue
-    private void addResult(Result result, Workbook workbook,  List<String> regions){
-        CreationHelper createHelper = workbook.getCreationHelper();
-        for(int sheetNum = 0; sheetNum < workbook.getNumberOfSheets(); sheetNum++){
-            Sheet sheet = workbook.getSheetAt(sheetNum);
-            Row dataRow = sheet.createRow(sheet.getLastRowNum() + 1);
+    private void addResult(Result result, Sheet sheet, CellStyle timestampStyle){
 
-            // UTC time column
-            Cell cell = dataRow.createCell(0);
-            cell.setCellValue(LocalDateTime.ofInstant(result.getUtc(), ZoneOffset.UTC));
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setDataFormat( createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
-            cell.setCellStyle(cellStyle);
+        Row headerRow = sheet.getRow(0);
+        Row dataRow = sheet.createRow(sheet.getLastRowNum() + 1);
 
-            // Data columns for each region across energy, revenue and total revenoue sheets
-            for(int col = 0; col < regions.size(); col ++){
-                cell = dataRow.createCell(col + 1);
-                switch(sheetNum){
-                    case 0:
-                        cell.setCellValue(result.getEnergy()); break;
-                    case 1:
-                        cell.setCellValue(result.getRevenue()); break;
-                    case 2:
-                        cell.setCellValue(result.getTotalRevenue()); break;
-                }
+        for(Cell headerCell : headerRow){
+            int columnIndex = headerCell.getColumnIndex();
+
+            if(columnIndex == 0){// UTC time column
+                Cell cell = dataRow.createCell(0);
+                cell.setCellValue(LocalDateTime.ofInstant(result.getUtc(), ZoneOffset.UTC));
+                cell.setCellStyle(timestampStyle);
+            }if(headerCell.getStringCellValue().equals(result.getRegion())) {
+                Cell dCell = dataRow.createCell(columnIndex);
+
+                if (sheet.getSheetName().equals("Energy"))
+                    dCell.setCellValue(result.getEnergy());
+                else if (sheet.getSheetName().equals("Revenue") )
+                    dCell.setCellValue(result.getRevenue());
+                else if (sheet.getSheetName().equals( "Total Revenue"))
+                    dCell.setCellValue(result.getTotalRevenue());
+
             }
         }
+
     }
+
 }
