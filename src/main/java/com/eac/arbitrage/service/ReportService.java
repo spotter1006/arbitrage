@@ -85,8 +85,11 @@ public class ReportService {
         Row revRow = revSheet.createRow(revSheet.getPhysicalNumberOfRows());
         Row totalRow = totalSheet.createRow(totalSheet.getPhysicalNumberOfRows());
 
-        CellStyle cellStyle = workbook.createCellStyle();
-        cellStyle.setDataFormat((short) 22);
+        CellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat((short) 22);
+
+        CellStyle moneyStyle = workbook.createCellStyle();
+        moneyStyle.setDataFormat((short) 39);
 
         for(Result result : results){
             if(!result.getUtc().equals(currentInterval)){
@@ -98,15 +101,15 @@ public class ReportService {
             LocalDateTime ldt = LocalDateTime.ofInstant(result.getUtc(),UTC);
             Cell eneryUtcCell =  energyRow.createCell(0);
             eneryUtcCell.setCellValue(ldt);
-            eneryUtcCell.setCellStyle(cellStyle);
+            eneryUtcCell.setCellStyle(dateStyle);
 
             Cell revUtcCell =  revRow.createCell(0);
             revUtcCell.setCellValue(ldt);
-            revUtcCell.setCellStyle(cellStyle);
+            revUtcCell.setCellStyle(dateStyle);
 
             Cell totalUtcCell = totalRow.createCell(0);
             totalUtcCell.setCellValue(ldt);
-            totalUtcCell.setCellStyle(cellStyle);
+            totalUtcCell.setCellStyle(dateStyle);
 
             energySheet.setColumnWidth(0,5000);
             revSheet.setColumnWidth(0,5000);
@@ -117,12 +120,14 @@ public class ReportService {
             Cell energyCell = energyRow.createCell(column);
             energyCell.setCellValue(result.getEnergy());
 
+
             Cell revCell = revRow.createCell(column);
             revCell.setCellValue(result.getRevenue());
+            revCell.setCellStyle(moneyStyle);
 
             Cell totalCell = totalRow.createCell(column);
             totalCell.setCellValue(result.getTotalRevenue());
-
+            totalCell.setCellStyle(moneyStyle);
 
         }
     }
