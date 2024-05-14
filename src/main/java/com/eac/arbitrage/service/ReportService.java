@@ -8,17 +8,19 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class ReportService {
     AnalysisRepository analysisRepository;
     ResultsRepository resultsRepository;
+    Map<String, Integer> columnNameMap = new HashMap<String, Integer>();
 
     @Autowired
     public ReportService(AnalysisRepository analysisRepository,ResultsRepository resultsRepository){
@@ -31,27 +33,21 @@ public class ReportService {
         List<String> pools = resultsRepository.getDistinctPools();
         for (String pool : pools) {
             List<String> regions = resultsRepository.getDistinctRegionByPool(pool);
+            List<Result> results = resultsRepository.getByPool(pool);
 
             Workbook workbook = new XSSFWorkbook();
-            CreationHelper createHelper = workbook.getCreationHelper();
             CellStyle timestampStyle = workbook.createCellStyle();
-            timestampStyle.setDataFormat( createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
+            timestampStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("m/d/yy h:mm"));
 
             Sheet energySheet = workbook.createSheet("Energy");
-            setupSheet(energySheet, regions);
-
             Sheet revSheet = workbook.createSheet("Revenue");
-            setupSheet(revSheet, regions);
-
             Sheet totalSheet = workbook.createSheet("Total Revenue");
-            setupSheet(totalSheet, regions);
 
-            List<Result> results = resultsRepository.getByPool(pool);
-            for(Result result : results){
-                addResult(result, energySheet, timestampStyle);
-                addResult(result, revSheet, timestampStyle);
-                addResult(result, totalSheet, timestampStyle);
-            }
+            setupSheet(energySheet, regions, timestampStyle);
+            setupSheet(revSheet, regions,  timestampStyle);
+            setupSheet(totalSheet, regions, timestampStyle);
+
+            processResults(results, workbook);
 
             // Save to filesystem
             try{
@@ -64,40 +60,70 @@ public class ReportService {
             }
         }
     }
-    private void setupSheet(Sheet sheet, List<String> regions){
-        Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("UTC");
+    private void setupSheet(Sheet sheet, List<String> regions,  CellStyle timestampStyle){
+        Row headerRow = sheet.createRow(0);
+        Cell utcCell = headerRow.createCell(0);
+        utcCell.setCellValue("UTC");
+        columnNameMap.put("UTC", 0);
         int i = 1;
         for(String region : regions){
-            header.createCell(i++).setCellValue(region);
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(region);
+            columnNameMap.put(region, i);
+            i++;
         }
+
     }
-    // Sheet order: 0 = energy, 1 = revenue, 2 = total revenue
-    private void addResult(Result result, Sheet sheet, CellStyle timestampStyle){
 
-        Row headerRow = sheet.getRow(0);
-        Row dataRow = sheet.createRow(sheet.getLastRowNum() + 1);
+    private void processResults(List<Result> results, Workbook workbook){
+        Sheet energySheet = workbook.getSheet("Energy");
+        Sheet revSheet = workbook.getSheet("Revenue");
+        Sheet totalSheet = workbook.getSheet("Total Revenue");
+        Instant currentInterval = results.get(0).getUtc();
 
-        for(Cell headerCell : headerRow){
-            int columnIndex = headerCell.getColumnIndex();
+        Row energyRow = energySheet.createRow(energySheet.getPhysicalNumberOfRows());
+        Row revRow = revSheet.createRow(revSheet.getPhysicalNumberOfRows());
+        Row totalRow = totalSheet.createRow(totalSheet.getPhysicalNumberOfRows());
 
-            if(columnIndex == 0){// UTC time column
-                Cell cell = dataRow.createCell(0);
-                cell.setCellValue(LocalDateTime.ofInstant(result.getUtc(), ZoneOffset.UTC));
-                cell.setCellStyle(timestampStyle);
-            }if(headerCell.getStringCellValue().equals(result.getRegion())) {
-                Cell dCell = dataRow.createCell(columnIndex);
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setDataFormat((short) 22);
 
-                if (sheet.getSheetName().equals("Energy"))
-                    dCell.setCellValue(result.getEnergy());
-                else if (sheet.getSheetName().equals("Revenue") )
-                    dCell.setCellValue(result.getRevenue());
-                else if (sheet.getSheetName().equals( "Total Revenue"))
-                    dCell.setCellValue(result.getTotalRevenue());
+        for(Result result : results){
+            LocalDateTime ldt = LocalDateTime.ofInstant(result.getUtc(),UTC);
 
+            Cell eneryUtcCell =  energyRow.createCell(0);
+            eneryUtcCell.setCellValue(ldt);
+            eneryUtcCell.setCellStyle(cellStyle);
+
+            Cell revUtcCell =  revRow.createCell(0);
+            revUtcCell.setCellValue(ldt);
+            revUtcCell.setCellStyle(cellStyle);
+
+            Cell totalUtcCell = totalRow.createCell(0);
+            totalUtcCell.setCellValue(ldt);
+            totalUtcCell.setCellStyle(cellStyle);
+
+            energySheet.setColumnWidth(0,6000);
+            revSheet.setColumnWidth(0,6000);
+            totalSheet.setColumnWidth(0,6000);
+
+            int column = columnNameMap.get(result.getRegion());
+
+            Cell energyCell = energyRow.createCell(column);
+            energyCell.setCellValue(result.getEnergy());
+
+            Cell revCell = revRow.createCell(column);
+            revCell.setCellValue(result.getRevenue());
+
+            Cell totalCell = totalRow.createCell(column);
+            totalCell.setCellValue(result.getTotalRevenue());
+
+            if(!result.getUtc().equals(currentInterval)){
+                energyRow = energySheet.createRow(energySheet.getPhysicalNumberOfRows());
+                revRow = revSheet.createRow(revSheet.getPhysicalNumberOfRows());
+                totalRow = totalSheet.createRow(totalSheet.getPhysicalNumberOfRows());
+                currentInterval = result.getUtc();
             }
         }
-
     }
-
 }

@@ -3,6 +3,8 @@ package com.eac.arbitrage.service;
 import com.eac.arbitrage.model.Analysis;
 import com.eac.arbitrage.model.Price;
 import com.eac.arbitrage.model.Result;
+
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
