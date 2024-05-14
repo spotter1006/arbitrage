@@ -89,8 +89,13 @@ public class ReportService {
         cellStyle.setDataFormat((short) 22);
 
         for(Result result : results){
+            if(!result.getUtc().equals(currentInterval)){
+                energyRow = energySheet.createRow(energySheet.getPhysicalNumberOfRows());
+                revRow = revSheet.createRow(revSheet.getPhysicalNumberOfRows());
+                totalRow = totalSheet.createRow(totalSheet.getPhysicalNumberOfRows());
+                currentInterval = result.getUtc();
+            }
             LocalDateTime ldt = LocalDateTime.ofInstant(result.getUtc(),UTC);
-
             Cell eneryUtcCell =  energyRow.createCell(0);
             eneryUtcCell.setCellValue(ldt);
             eneryUtcCell.setCellStyle(cellStyle);
@@ -103,9 +108,9 @@ public class ReportService {
             totalUtcCell.setCellValue(ldt);
             totalUtcCell.setCellStyle(cellStyle);
 
-            energySheet.setColumnWidth(0,6000);
-            revSheet.setColumnWidth(0,6000);
-            totalSheet.setColumnWidth(0,6000);
+            energySheet.setColumnWidth(0,5000);
+            revSheet.setColumnWidth(0,5000);
+            totalSheet.setColumnWidth(0,5000);
 
             int column = columnNameMap.get(result.getRegion());
 
@@ -118,12 +123,7 @@ public class ReportService {
             Cell totalCell = totalRow.createCell(column);
             totalCell.setCellValue(result.getTotalRevenue());
 
-            if(!result.getUtc().equals(currentInterval)){
-                energyRow = energySheet.createRow(energySheet.getPhysicalNumberOfRows());
-                revRow = revSheet.createRow(revSheet.getPhysicalNumberOfRows());
-                totalRow = totalSheet.createRow(totalSheet.getPhysicalNumberOfRows());
-                currentInterval = result.getUtc();
-            }
+
         }
     }
 }
